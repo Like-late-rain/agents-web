@@ -6,3 +6,4 @@ dist/
 
 # Environment configs
 .env
+.history

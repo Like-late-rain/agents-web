@@ -1,10 +1,10 @@
-import { FormEvent, useState } from "react";
+import { useState, type FormEvent } from "react";
 import { sendChat, type ChatMessage } from "./api";
 import "./App.css";
 
 const welcomeMessage: ChatMessage = {
   role: "assistant",
-  content: "你好，我是你的情感支持伙伴。愿意和我分享一下最近的心情吗？"
+  content: "您好，我是您的情感支持伙伴。愿意和我分享一下最近的心情吗？",
 };
 
 function App() {
@@ -18,7 +18,8 @@ function App() {
     const trimmed = input.trim();
     if (!trimmed || isLoading) return;
 
-    const nextMessages = [...messages, { role: "user", content: trimmed }];
+    const userMessage: ChatMessage = { role: "user", content: trimmed };
+    const nextMessages = [...messages, userMessage];
     setMessages(nextMessages);
     setInput("");
     setError(null);
@@ -26,7 +27,11 @@ function App() {
 
     try {
       const reply = await sendChat(nextMessages);
-      setMessages([...nextMessages, { role: "assistant", content: reply }]);
+      const assistantMessage: ChatMessage = {
+        role: "assistant",
+        content: reply,
+      };
+      setMessages([...nextMessages, assistantMessage]);
     } catch (err) {
       setError(err instanceof Error ? err.message : "发送失败");
     } finally {
@@ -48,7 +53,11 @@ function App() {
           <h1>情绪支持工作台</h1>
           <p className="subtitle">随时记录心声，获得共情与可执行建议。</p>
         </div>
-        <button className="ghost-btn" onClick={handleReset} disabled={isLoading}>
+        <button
+          className="ghost-btn"
+          onClick={handleReset}
+          disabled={isLoading}
+        >
           重新开始对话
         </button>
       </header>
